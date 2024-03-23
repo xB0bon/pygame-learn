@@ -4,7 +4,6 @@ import pygame
 import random
 from sys import exit
 
-start_time = 0
 game_score = 0
 
 
@@ -88,8 +87,9 @@ player_instance = Player(snail_instance)
 
 
 def score():
-    global game_score
+    global game_score, start_time
     game_score = int(pygame.time.get_ticks() / 1000) - start_time
+
     score_surface = font.render(f'score: {game_score}', True, 'black')
     screen.blit(score_surface, (320, 100))
 
@@ -105,6 +105,7 @@ while True:
         if start_menu:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_game_rect.collidepoint(event.pos):
+                    start_time = int(pygame.time.get_ticks() / 1000)
                     run = True
                     start_menu = False
         if not run:
