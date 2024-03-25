@@ -16,25 +16,25 @@ class Player:
         self.skok = False
 
     def draw(self, screen, snail_rect, run):
+
         screen.blit(self.player_surface, self.player_rect)
 
         if self.skok:
             self.player_rect.y -= self.gravity
             self.gravity -= 0.5
             if self.player_rect.y >= 216:
+
                 self.player_rect.y = 216
                 self.skok = False
                 self.gravity = 11
 
     def fizyka(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE or event.key == pygame.K_w or event.key == pygame.K_UP or event.key == pygame:
-                self.skok = True
-                skok = pygame.mixer.Sound('audio/jump.mp3')
-                skok.set_volume(0.05)
+            if event.key == pygame.K_SPACE or event.key == pygame.K_w or event.key == pygame.K_UP or event.key == pygame :
+                if self.player_rect.y == 216:
+                    skok.play()
+                    self.skok = True
 
-                # Odtworzenie dźwięku
-                skok.play()
 
 
 class Snail:
@@ -61,7 +61,7 @@ class Snail:
         else:
             return []
 
-    def kolize(self,player , obstacles):
+    def kolize(self, player, obstacles):
         if obstacles:
             for obstacle_rect in obstacles:
                 if player.colliderect(obstacle_rect):
@@ -85,6 +85,8 @@ pygame.mixer.init()
 pygame.mixer.music.load('audio/music.wav')
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
+skok = pygame.mixer.Sound('audio/jump.mp3')
+skok.set_volume(0.05)
 screen = pygame.display.set_mode((800, 400))
 run = False
 pygame.display.set_caption('Jump Game')
@@ -136,6 +138,8 @@ start_menu = True
 
 while True:
     for event in pygame.event.get():
+        if run and not start_menu:
+            player_instance.fizyka(event)
         if event.type == pygame.QUIT:
             run = False
             pygame.quit()
@@ -148,13 +152,18 @@ while True:
                     start_menu = False
         if not run:
             if event.type == pygame.MOUSEBUTTONUP:
+                player_instance.player_rect.y = 216
                 run = True
+
                 lista_przeszkod.clear()
                 start_time = int(pygame.time.get_ticks() / 1000)
             if event.type == pygame.KEYDOWN:
                 if event.key != pygame.K_ESCAPE:
                     time.sleep(0.5)
+
+                    player_instance.player_rect.y = 216
                     run = True
+
                     lista_przeszkod.clear()
                     snail_instance.snail_rect.x = 810
                     start_time = int(pygame.time.get_ticks() / 1000)
@@ -162,6 +171,7 @@ while True:
                     pygame.quit()
                     exit()
         if run:
+
             if event.type == obstacle_timer:
                 if random.randint(0, 1):
                     lista_przeszkod.append(snail_instance.snail.get_rect(bottomright=(random.randint(900, 1100), 300)))
@@ -170,7 +180,6 @@ while True:
                         fly_instance.fly_surface.get_rect(bottomright=(random.randint(700, 1000), 200)))
 
 
-        player_instance.fizyka(event)
 
     if start_menu:
         screen.fill((110, 158, 204))
